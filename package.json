@@ -1,0 +1,42 @@
+{
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
+    "heroku-postbuild": "next build"
+  },
+  "engines": {
+    "node": "6.7.0"
+  },
+  "babel": {
+    "presets": [
+      "next/babel"
+    ],
+    "plugins": [
+      [
+        "inline-json",
+        {
+          "matchPattern": "Bookmark"
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "babel-plugin-inline-json": "^1.2.2",
+    "body-parser": "^1.17.2",
+    "cookie-session": "^1.3.1",
+    "ethereumjs-testrpc": "^4.1.3",
+    "express": "^4.15.4",
+    "github": "^10.0.0",
+    "grant-express": "^3.8.0",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.4",
+    "material-ui": "^0.19.2",
+    "next": "^3.0.3",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "truffle": "^3.4.9",
+    "truffle-contract": "^3.0.0",
+    "web3": "^1.0.0-beta.20"
+  }
+}
