@@ -16,6 +16,8 @@ export default class MyDocument extends Document {
          <meta charSet='utf-8' />
          <meta name='viewport' content='initial-scale=1.0, width=device-width' />
          <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+         <link href="https://unpkg.com/tachyons@4.8.1/css/tachyons.min.css" rel="stylesheet" />
+         <link rel='stylesheet' type='text/css' href='http://ricostacruz.com/nprogress/nprogress.css' />
          <script src="/static/js/web3.min.js"></script>
        </Head>
        <body>

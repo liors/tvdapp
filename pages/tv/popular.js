@@ -1,24 +1,41 @@
 import React, { Component } from 'react'
+import { Provider } from 'mobx-react'
+
+import { initStore } from '../../store'
 import { setWeb3Instance } from '../../services/blockChainService'
-import Shows from '../../components/shows'
+import Shows from '../../components/shows2'
+import Nav from '../../components/navigation'
+
 export default class Fresh extends Component {
-  static async getInitialProps() {
-    const res = await fetch('http://localhost:3020/api/shows/popular')
+  static async getInitialProps({ req }) {
+    const res = await fetch(process.env.BACKEND_URL + '/popular')
     const shows = await res.json()
-    const showsInRow=4
+    const isServer = !!req
+    const store = initStore(isServer, shows)
+
     return { 
       shows,
-      showsInRow
+      isServer
     }
   }
 
-  componentDidMount() {
-    setWeb3Instance()
+  constructor (props) {
+    super(props)
+    this.store = initStore(props.isServer, props.shows)
+  }
+
+  componentDidMount () {
+    setWeb3Instance()    
   }
 
   render() {
     return (
-      <Shows {...this.props}/>      
+      <Provider store={this.store}>
+        <div>
+          <Nav selected='popular' />
+          <Shows {...this.props} />
+        </div>
+      </Provider>         
     )
   }
 }
