@@ -3,7 +3,7 @@ import { Provider } from 'mobx-react'
 
 import { initStore } from '../../store'
 import { setWeb3Instance } from '../../services/blockChainService'
-import Shows from '../../components/shows2'
+import Shows from '../../components/shows'
 import Nav from '../../components/navigation'
 
 export default class Fresh extends Component {

@@ -1,108 +1,45 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react';
 
-import { GridList, GridTile } from 'material-ui/GridList';
-import { deepOrange500 } from 'material-ui/styles/colors'
-import IconButton from 'material-ui/IconButton';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import Dialog from 'material-ui/Dialog';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
-
-if (!process.tapEventInjected) {
-    injectTapEventPlugin()
-    process.tapEventInjected = true
-}
-
-const styles = {
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-    },
-    gridList: {
-        width: '748',
-        overflowY: 'auto',
-    },
-};
-
-const muiTheme = {
-    palette: {
-      accent1Color: deepOrange500
-    }
-  }
+import map from 'lodash/map'
+import includes from 'lodash/includes'
 
 @inject('store') @observer
 export default class Shows extends React.Component {
-    handleOpen = (show) => {
-        this.props.store.selectedShow = show
-    };
 
-    handleClose = (action) => {
-        this.props.store.selectedShow = {}
-    };
+    handleBookmark = show => this.props.store.bookmark(show)
+
+    isBookmarked = show => includes(this.props.store.selectedShows, show)    
 
     render() {
         const { store } = this.props
-        const shows = store.shows;
-        const userAgent = store.userAgent
-        const actions = [
-            <FlatButton
-                label="Cancel"
-                primary={true}
-                onClick={() => this.handleClose('cancel')}
-            />,
-            <FlatButton
-                label="Ok"
-                primary={true}
-                keyboardFocused={true}
-                onClick={() => this.props.store.bookmark()}
-            />,
-        ];
-
+        const shows = store.shows
         return (
-            <MuiThemeProvider muiTheme={getMuiTheme({userAgent, ...muiTheme})}>
-                <div style={styles.root}>
-                    <GridList
-                        cellHeight={262}
-                        style={styles.gridList}
-                        cols={4}
-                    >
-                        {shows.map((show) => (
-                            <GridTile
-                                key={show.img.medium}
-                                title={show.title}
-                                actionIcon={<IconButton onClick={() => { this.handleOpen(show) }}><StarBorder color="white" /></IconButton>}
-                            >
-                                <img src={show.img.medium} className={'img'} />
-                                <style jsx>{`
-                            img {
-                                cursor: pointer;
-                                transition: transform .25s ease-out;
-                            }
-                            img:hover {
-                                transform: scale(1.05);
-                                transition: transform .25s ease-out;
-                            }
-                          `}</style>
-                            </GridTile>
-                        ))}
-                    </GridList>
-                    <Dialog
-                        title={store.selectedShow.title}
-                        actions={actions}
-                        modal={false}
-                        open={!!store.selectedShow.title}
-                        onRequestClose={this.handleClose}
-                    >
-                        Bookmark {store.selectedShow.title} to watch latests episodes.
-                    </Dialog>
-                </div>
-            </MuiThemeProvider>
+            <div>
+                <section className={`cf w-100 pa2-ns`}>
+                    {
+                        map(shows, show => {
+                            return (
+                                <article key={show.title} className={`fl w-100 w-50-m  w-25-ns pa2-ns`}>
+                                    <div className={`aspect-ratio aspect-ratio--1x1`}>
+                                        <img style={{ backgroundImage: `url(${show.img.original})` }}
+                                            className={`db bg-center cover aspect-ratio--object`} />
+                                    </div>
+                                    <a onClick={() => {this.handleBookmark(show)}} className={`pointer ph2 ph0-ns pb3 link db`} style={{ position: 'relative' }}>
+                                        <h3 className={`f5 f4-ns mb0 black-90`}>{show.title}</h3>
+                                        <div style={{ position: 'absolute', zIndex: 100, right: 0, top: 0 }}>
+                                            <svg className={`svgIcon-use`} style={{fill: 'rgba(0,0,0,.54)', display: this.isBookmarked(show) ? 'block' : 'none'}} width="25" height="26" viewBox="0 0 25 26"><path d="M19 7c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v14.66h.012c.01.103.045.204.12.285a.5.5 0 0 0 .706.03L12.5 17.85l5.662 4.126a.508.508 0 0 0 .708-.03.5.5 0 0 0 .118-.285H19V7z" fillRule="evenodd"></path></svg>
+                                        </div>
+                                        <div style={{ position: 'absolute', zIndex: 100, right: 0, top: 0 }}>
+                                            <svg className={`svgIcon-use`} style={{fill: 'rgba(0,0,0,.54)', display: this.isBookmarked(show) ? 'none' : 'block'}} width="25" height="25" viewBox="0 0 25 25"><path d="M19 6c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v14.66h.012c.01.103.045.204.12.285a.5.5 0 0 0 .706.03L12.5 16.85l5.662 4.126a.508.508 0 0 0 .708-.03.5.5 0 0 0 .118-.285H19V6zm-6.838 9.97L7 19.636V6c0-.55.45-1 1-1h9c.55 0 1 .45 1 1v13.637l-5.162-3.668a.49.49 0 0 0-.676 0z" fillRule="evenodd"></path></svg>
+                                        </div>
+                                    </a>
+                                </article>
+                            )
+                        })
+                    }
+                </section>
+            </div>
         )
     }
 }
