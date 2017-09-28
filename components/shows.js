@@ -22,7 +22,7 @@ export default class Shows extends React.Component {
                             return (
                                 <article key={show.title} className={`fl w-100 w-50-m  w-25-ns pa2-ns`}>
                                     <div className={`aspect-ratio aspect-ratio--1x1`}>
-                                        <img style={{ backgroundImage: `url(${show.img.original})` }}
+                                        <img style={{ backgroundImage: `url(${show.img.original.replace('http://', '//')})` }}
                                             className={`db bg-center cover aspect-ratio--object`} />
                                     </div>
                                     <a onClick={() => {this.handleBookmark(show)}} className={`pointer ph2 ph0-ns pb3 link db`} style={{ position: 'relative' }}>
