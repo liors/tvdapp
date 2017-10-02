@@ -2,18 +2,17 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react';
 
 import map from 'lodash/map'
-import includes from 'lodash/includes'
+import some from 'lodash/some'
 
 @inject('store') @observer
 export default class Shows extends React.Component {
 
     handleBookmark = show => this.props.store.bookmark(show)
 
-    isBookmarked = show => includes(this.props.store.selectedShows, show)    
+    isBookmarked = show => some(this.props.store.selectedShows, show)    
 
     render() {
-        const { store } = this.props
-        const shows = store.shows
+        const shows = this.props.store.shows
         return (
             <div>
                 <section className={`cf w-100 pa2-ns`}>

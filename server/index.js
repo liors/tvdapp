@@ -7,7 +7,7 @@ const port = parseInt(process.env.PORT, 10) || 3020
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
-const api = require('./server/api')
+const api = require('./api')
 
 app.prepare()
   .then(() => {
@@ -22,7 +22,11 @@ app.prepare()
 
     server.get('/api/shows/fresh', (req, res) => api.get('tv-list-3').then(json => res.send(json)))
 
-    server.get('/api/shows/air', (req, res) => api.showsAiringAt().then(json => res.send(json)))    
+    server.get('/api/shows/air', (req, res) => api.showsAiringAt().then(json => res.send(json)))   
+    
+    server.get('/', (req, res) => res.redirect('/tv/fresh'))
+
+    server.get('/tv', (req, res) => res.redirect('/tv/fresh'))
 
     server.get('*', (req, res) => handle(req, res))
 

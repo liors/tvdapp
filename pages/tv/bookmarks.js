@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
 import { Provider } from 'mobx-react'
 
-import { initStore } from '../../store'
+import { initStore } from '../../mobx/store'
 import { setWeb3Instance, getBookmarks } from '../../services/blockChainService'
 import Shows from '../../components/shows'
 import Nav from '../../components/navigation'
 
-export default class Fresh extends Component {
-  static async getInitialProps({ req }) {
-    const isServer = !!req
+export default class Bookmarks extends Component {
+  static getInitialProps({ req }) {
+    const isServer = !!req   
     const store = initStore(isServer)
-
     return {
       isServer
     }
@@ -18,21 +17,24 @@ export default class Fresh extends Component {
 
   constructor(props) {
     super(props)
-    this.store = initStore(props.isServer, props.shows)
+    this.store = initStore(props.isServer)    
   }
 
-  async componentDidMount() {
-    const ready = await setWeb3Instance()
-    const res = await getBookmarks()
-    debugger
-    
+  componentDidMount() {   
+    setWeb3Instance()
+      .then(() => getBookmarks())
+      .then(shows => { 
+        console.log('componentDidMount')
+        this.store.setBookmarkShows(shows) 
+      })
   }
 
   render() {
     return (
       <Provider store={this.store}>
         <div>
-          <Nav selected='bookmarks' />         
+          <Nav selected='bookmarks' /> 
+          <Shows {...this.store} />     
         </div>
       </Provider>
     )

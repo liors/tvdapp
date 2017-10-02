@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Provider } from 'mobx-react'
 
-import { initStore } from '../../store'
-import { setWeb3Instance } from '../../services/blockChainService'
+import { initStore } from '../../mobx/store'
+import { setWeb3Instance, getBookmarks } from '../../services/blockChainService'
 import Shows from '../../components/shows'
 import Nav from '../../components/navigation'
 
@@ -24,8 +24,13 @@ export default class Fresh extends Component {
     this.store = initStore(props.isServer, props.shows)
   }
 
-  componentDidMount () {
-    setWeb3Instance()    
+  componentDidMount() {   
+    setWeb3Instance()
+      .then(() => getBookmarks())
+      .then(shows => {
+        console.log('componentDidMount')
+        this.store.setBookmarkShows(shows)
+      })
   }
 
   render() {
@@ -33,7 +38,7 @@ export default class Fresh extends Component {
       <Provider store={this.store}>
         <div>
           <Nav selected='popular' />
-          <Shows {...this.props} />
+          <Shows {...this.props.store} />
         </div>
       </Provider>         
     )

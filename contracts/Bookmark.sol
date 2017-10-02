@@ -1,28 +1,19 @@
 pragma solidity ^0.4.4;
 
 contract Bookmark {
-    struct Member {
-        address name;
-        string[] showIds;
+    mapping (address => string) private bookmarks;
+    address public owner;
+
+    function Bookmark() {       
+        owner = msg.sender;
     }
 
-    Member[] members;
-
-    function bookmark(string showId) returns (string _aShowId) {
-        address name = msg.sender;
-
-        members.push(Member(name, showId));
-        return showId;        
+    function bookmark(string show) public returns (string) {
+        bookmarks[msg.sender] = show;        
+        return bookmarks[msg.sender];
     }
 
-    function getBookmarks() returns (string[]) {
-        string[] result;
-        address name = msg.sender;
-        for (uint i = 0; i <= members.length; i++) {
-            if (members[i].name == name) {
-                return members[i].showId;
-            }
-        }        
-        return result;
+    function getBookmarks() constant returns (string) {
+        return bookmarks[msg.sender];
     } 
 }
