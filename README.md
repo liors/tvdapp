@@ -1,4 +1,4 @@
 # tvdapp
-A Blockchain DApp using React, Next.js and mobx.
+A Blockchain DApp using React, Next.js and MobX.
 
-<img src="https://cdn-images-1.medium.com/max/2000/1*1W2Zn1-V9eGdrfK4gYPvVA.png"/>
+<img src="blob:https://medium.com/65003c20-680d-40b9-8d52-a30d98408547"/>
