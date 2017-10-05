@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react';
-
+import Notification  from '../components/notification';
 import map from 'lodash/map'
 import some from 'lodash/some'
 
@@ -9,10 +9,15 @@ export default class Shows extends React.Component {
 
     handleBookmark = show => this.props.store.bookmark(show)
 
-    isBookmarked = show => some(this.props.store.selectedShows, show)    
+    isBookmarked = show => some(this.props.store.bookmarkedShows, show)    
+
+    getShows () {
+        return this.props.type === 'bookmarks' ? this.props.store.bookmarkedShows : this.props.store.shows        
+    }
 
     render() {
-        const shows = this.props.store.shows
+        const shows = this.getShows()
+        const store = this.props.store
         return (
             <div>
                 <section className={`cf w-100 pa2-ns`}>
@@ -38,6 +43,12 @@ export default class Shows extends React.Component {
                         })
                     }
                 </section>
+                <Notification
+                    isActive={store.bookmarkNotificationIsOn}
+                    dismissAfter={3}
+                    getMessage={store.getMessage.bind(store)}
+                    hideBookmarkNotification={store.hideBookmarkNotification.bind(store)}
+                    />
             </div>
         )
     }

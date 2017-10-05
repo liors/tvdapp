@@ -31,4 +31,15 @@ contract('Bookmark', accounts => {
       assert.equal(bookmark, JSON.stringify([MeMyselfAndI, TheGifted]))      
     })
   })
+
+  it('should allow setting less shows', () => {
+    Bookmark.deployed().then(instance => {
+      instance.bookmark(JSON.stringify([MeMyselfAndI, TheGifted]), {from: accounts[0]})
+      instance.bookmark(JSON.stringify([MeMyselfAndI]), {from: accounts[0]})      
+      return instance.getBookmarks.call()
+    })
+    .then(bookmark => {
+      assert.equal(bookmark, JSON.stringify([MeMyselfAndI]))      
+    })
+  })
 })

@@ -1,8 +1,8 @@
 import Web3 from 'web3'
-
 import contract from 'truffle-contract'
 import BookmarkArtifact from '../build/contracts/Bookmark'
 import isArray from 'lodash/isArray'
+import reduce from 'lodash/reduce'
 
 let web3Instance;
 
@@ -32,62 +32,84 @@ let setWeb3Instance = function () {
     })
 }
 
-let bookmarkContract = function (show) {
+let getBookmarkInstance = function () {
     return new Promise((resolve, reject) => {
-        var bookmarknstance;
-        var Bookmark = contract(BookmarkArtifact);
+        const Bookmark = contract(BookmarkArtifact)
         Bookmark.setProvider(web3Instance.currentProvider)
         web3Instance.eth.getAccounts((error, accounts) => {
-            var account = accounts[0];
-            console.log(accounts)
-            Bookmark.deployed()
-                .then((instance) => {
-                    bookmarknstance = instance
-                    bookmarknstance.getBookmarks.call()
-                        .then(bookmarks => {
-                            let blockchainBookmarks;
-                            if (bookmarks) {
-                                blockchainBookmarks = JSON.parse(bookmarks.toString())
-                                if (!isArray(blockchainBookmarks)) {
-                                    blockchainBookmarks = [blockchainBookmarks]
-                                }
-                                blockchainBookmarks.push(show)
-                            } else {
-                                blockchainBookmarks = show
-                            }
-                            debugger;
-                            console.log('data: ' + JSON.stringify(blockchainBookmarks))
-                            bookmarknstance.bookmark(JSON.stringify(blockchainBookmarks), { from: account })
-                                .then(showId => bookmarknstance.getBookmarks.call())
-                                .then(bookmarks => {
-                                    resolve({ data: JSON.parse(bookmarks.toString()) })
-                                })
-                        })
-                })
-        });
+            const account = accounts[0]
+            Bookmark.deployed().then((instance) => {
+                resolve({ instance, account })
+            })
+        })
+    })
+}
+
+let bookmarkContract = function (show) {
+    return new Promise((resolve, reject) => {
+        let instance, account, blockchainBookmarks;
+        getBookmarkInstance()
+            .then(result => ({instance, account} = result))
+            .then(() => instance.getBookmarks.call())
+            .then(bookmarks => {
+                if (bookmarks) {
+                    blockchainBookmarks = JSON.parse(bookmarks.toString())
+                    if (!isArray(blockchainBookmarks)) {
+                        blockchainBookmarks = [blockchainBookmarks]
+                    }
+                    blockchainBookmarks.push(show)
+                } else {
+                    blockchainBookmarks = show
+                }
+                instance.bookmark(JSON.stringify(blockchainBookmarks), { from: account })
+                    .then(showId => instance.getBookmarks.call())
+                    .then(bookmarks => {
+                        resolve({ data: JSON.parse(bookmarks.toString()) })
+                    })
+            })
+    })
+};
+
+let rejectBookmarkContract = function (show) {
+    return new Promise((resolve, reject) => {
+        let instance, account, blockchainBookmarks;
+        getBookmarkInstance()
+            .then(result => ({instance, account} = result))
+            .then(() => instance.getBookmarks.call())
+            .then(bookmarks => {                
+                blockchainBookmarks = JSON.parse(bookmarks.toString())
+                blockchainBookmarks = reduce(blockchainBookmarks, (sum, bookmark) => { 
+                    if (bookmark.title !== show.title) { 
+                        sum.push(bookmark) 
+                    } 
+                    return sum  
+                }, [])            
+                instance.bookmark(JSON.stringify(blockchainBookmarks), { from: account, gas: 2000000 })
+                    .then(showId => instance.getBookmarks.call())
+                    .then(bookmarks => {
+                        resolve({ data: JSON.parse(bookmarks.toString()) })
+                    })
+            })
     })
 };
 
 
 let getBookmarks = function () {
     return new Promise((resolve, reject) => {
-        var bookmarknstance;
-        var Bookmark = contract(BookmarkArtifact);
-        Bookmark.setProvider(web3Instance.currentProvider)
-        web3Instance.eth.getAccounts((error, accounts) => {
-            var account = accounts[0];
-            Bookmark.deployed()
-                .then(instance => bookmarknstance = instance)
-                .then(() => bookmarknstance.getBookmarks.call())
-                .then(bookmarks => resolve(JSON.parse(bookmarks.toString()))
-                )
-        })
+        let instance
+        getBookmarkInstance()
+            .then(result => ({instance} = result))
+            .then(() => instance.getBookmarks.call())
+            .then(bookmarks => {
+                resolve(bookmarks && JSON.parse(bookmarks.toString()))
+            })
     })
 }
 
 
 export {
     bookmarkContract,
+    rejectBookmarkContract,
     getBookmarks,
     setWeb3Instance
 }

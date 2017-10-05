@@ -1,46 +1,68 @@
-import { observable } from 'mobx'
-import includes from 'lodash/includes'
+import { observable, action, toJS } from 'mobx'
+import some from 'lodash/some'
 import reject from 'lodash/reject'
-import isEmpty from 'lodash/isEmpty'
-import { bookmarkContract } from '../services/blockChainService'
+
+import { bookmarkContract, rejectBookmarkContract } from '../services/blockChainService'
 
 let store = null
+const ADD_ACTION = 'add'
+const ADD_MESSAGE = 'Saved on the blockchain.'
+const REMOVE_MESSAGE = 'Removed for the blockchain.'
+const REMOVE_ACTION = 'remove'
 
 class Store {
   @observable shows = []
-  @observable selectedShows = []
+  @observable bookmarkedShows = []
+  @observable bookmarkNotificationIsOn = false
+  @observable currentAction = undefined
 
-  constructor (isServer, shows) {
+  constructor(isServer, shows) {
     this.shows = shows
   }
 
+  @action
   setBookmarkShows(shows) {
-    console.log('setBookmarkShows')
-    if (isEmpty(this.shows)) {
-      this.shows = shows  
+    this.bookmarkedShows = shows   
+  }
+  
+  @action
+  hideBookmarkNotification () {
+    this.bookmarkNotificationIsOn = false
+  }
+
+  getMessage () {
+    return this.actionToMessage()
+  }
+
+  actionToMessage () {
+    switch (this.currentAction) {
+      case ADD_ACTION:
+        return ADD_MESSAGE
+      case REMOVE_ACTION:
+        return REMOVE_MESSAGE
     }
-    this.selectedShows = shows
   }
 
-  set selectedShows(shows) {
-    this.selectedShows = shows
-  }
-
+  @action
   bookmark(show) {
-      if (includes(this.selectedShows, show)) {
-        this.selectedShows = reject(this.selectedShows, show)
-      } else {
-        this.selectedShows.push(show)
-        bookmarkContract(show)
-        .then(data => {debugger})
-        .catch(e => {
-          debugger
-            console.log('Error finding web3.')
-        })
-      }    
+    if (some(this.bookmarkedShows, show)) {
+      this.bookmarkedShows = reject(this.bookmarkedShows, show)      
+      this.currentAction = REMOVE_ACTION      
+      rejectBookmarkContract(toJS(show)).then(() => {
+        this.bookmarkNotificationIsOn = true
+        this.currentAction = undefined
+      })
+    } else {
+      this.bookmarkedShows.push(show)
+      this.currentAction = ADD_ACTION
+      bookmarkContract(toJS(show)).then(() => {
+        this.bookmarkNotificationIsOn = true
+        this.currentAction = undefined
+      })
+    }
   }
 }
 
-export function initStore (isServer, shows = []) {
-    return new Store(isServer, shows)
+export function initStore(isServer, shows = []) {
+  return new Store(isServer, shows)
 }
