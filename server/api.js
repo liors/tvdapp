@@ -1,7 +1,6 @@
 require('isomorphic-fetch')
 const map = require('lodash/map')
 const shuffle = require('lodash/shuffle')
-const PirateBay = require('thepiratebay')
 
 async function get(type) {
     const rottentomatoesResponse = await fetch(`https://www.rottentomatoes.com/api/private/v2.0/browse?sortBy=popularity&type=${type}`)

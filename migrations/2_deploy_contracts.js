@@ -1,5 +1,3 @@
-var Bookmark = artifacts.require("./Bookmark.sol");
+var Bookmark = artifacts.require('./Bookmark.sol')
 
-module.exports = function(deployer) {
-  deployer.deploy(Bookmark);
-};
+module.exports = deployer => deployer.deploy(Bookmark)
