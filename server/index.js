@@ -1,7 +1,5 @@
 const express = require('express')
 const next = require('next')
-const path = require('path')
-const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const port = parseInt(process.env.PORT, 10) || 3020
 const dev = process.env.NODE_ENV !== 'production'
