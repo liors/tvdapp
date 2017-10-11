@@ -19,8 +19,6 @@ app.prepare()
     server.get('/api/shows/popular', (req, res) => api.get('tv-list-2').then(json => res.send(json)))
 
     server.get('/api/shows/fresh', (req, res) => api.get('tv-list-3').then(json => res.send(json)))
-
-    server.get('/api/shows/air', (req, res) => api.showsAiringAt().then(json => res.send(json)))   
     
     server.get('/', (req, res) => res.redirect('/tv/fresh'))
 
