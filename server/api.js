@@ -6,7 +6,6 @@ async function get(type) {
     const rottentomatoesResponse = await fetch(`https://www.rottentomatoes.com/api/private/v2.0/browse?sortBy=popularity&type=${type}`)
     const json = await rottentomatoesResponse.json()
     const titles = json.results.map(element => { return { title: element.title.split(':')[0] }})
-
     return await Promise.all(titles.map(title => getImageFrom(title)))
 }
 
