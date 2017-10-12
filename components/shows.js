@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import Notification  from '../components/notification';
 import map from 'lodash/map'
 import some from 'lodash/some'
+import get from 'lodash/get'
 
 @inject('store') @observer
 export default class Shows extends React.Component {
@@ -26,7 +27,7 @@ export default class Shows extends React.Component {
                             return (
                                 <article key={show.title} className={`fl w-100 w-50-m  w-25-ns pa2-ns`}>
                                     <div className={`aspect-ratio aspect-ratio--1x1`}>
-                                        <img style={{ backgroundImage: `url(${show.img.original.replace('http://', '//')})` }}
+                                        <img style={{ backgroundImage: `url(${get(show, 'img.original', '').replace('http://', '//')})` }}
                                             className={`db bg-center cover aspect-ratio--object`} />
                                     </div>
                                     <a onClick={() => {this.handleBookmark(show)}} className={`pointer ph2 ph0-ns pb3 link db`} style={{ position: 'relative' }}>
