@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import contract from 'truffle-contract'
 import BookmarkArtifact from '../build/contracts/Bookmark'
 import isArray from 'lodash/isArray'
@@ -92,7 +91,6 @@ let rejectBookmarkContract = function (show) {
             })
     })
 };
-
 
 let getBookmarks = function () {
     return new Promise((resolve, reject) => {
