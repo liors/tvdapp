@@ -46,16 +46,16 @@ class Store {
   @action
   bookmark(show) {
     if (some(this.bookmarkedShows, show)) {
-      this.bookmarkedShows = reject(this.bookmarkedShows, show)      
       this.currentAction = REMOVE_ACTION      
       rejectBookmarkContract(toJS(show)).then(() => {
+        this.bookmarkedShows = reject(this.bookmarkedShows, show)              
         this.bookmarkNotificationIsOn = true
         this.currentAction = undefined
       })
     } else {
-      this.bookmarkedShows.push(show)
       this.currentAction = ADD_ACTION
       bookmarkContract(toJS(show)).then(() => {
+        this.bookmarkedShows.push(show)        
         this.bookmarkNotificationIsOn = true
         this.currentAction = undefined
       })
